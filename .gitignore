@@ -1,3 +1,7 @@
 *.code-workspace
 
 .env
+
+data/
+
+data.tgz
