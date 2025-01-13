@@ -4,8 +4,9 @@ import json
 file = 'USvideos.csv'
 vdo_df = pd.read_csv(file)
 
-# print(vdo_df.count()[0])
 vdo_df.drop_duplicates(inplace=True)
+# count non-NA cells for each columnn or row
+print(vdo_df.count())
 
 condition = (vdo_df['trending_date'] == '18.22.01') & (vdo_df['comment_count'] > 10000)
 

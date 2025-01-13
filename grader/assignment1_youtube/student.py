@@ -18,7 +18,7 @@ def Q1():
     # inplace=True will modify the DataFrame in place rather than returning a new DataFrame.
     vdo_df.drop_duplicates(inplace=True)
 
-    return vdo_df.count()[0]
+    return vdo_df.shape[0]
 
 def Q2(vdo_df):
     '''
@@ -41,7 +41,7 @@ def Q3(vdo_df):
     '''
    
     condition = (vdo_df['trending_date'] == '18.22.01') & (vdo_df['comment_count'] > 10000)
-    return vdo_df[condition].count()[0]
+    return vdo_df[condition].shape[0]
 
 def Q4(vdo_df):
     '''
@@ -79,13 +79,10 @@ def Q5(vdo_df):
 
     vdp_df_withcat = vdo_df_withcat.groupby(['trending_date', 'category'])['views'].sum()
 
+    vdp_df_withcat = vdp_df_withcat.groupby(['trending_date']) 
+
     cnt = 0
     for a in vdp_df_withcat:
-        # print(a[1].keys())
-        # print(a[1][a[0]]['Sports'])
-        # print(a[1].values())
         if(a[1][a[0]]['Sports'] > a[1][a[0]]['Comedy']):
             cnt += 1
-
-
     return cnt
