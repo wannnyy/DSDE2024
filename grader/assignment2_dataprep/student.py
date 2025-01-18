@@ -88,7 +88,12 @@ def Q5(df):
             Hint: Use function round(_, 2)
     '''
     # TODO: Code here
-    return None
+
+    col = 'Age'
+    idx = df[col].isnull()
+
+    df.loc[idx,col] = df[col].mean()
+    return round(df.loc[idx,col].mean(),2)
 
 
 def Q6(df):
@@ -100,7 +105,12 @@ def Q6(df):
             Hint: Use function round(_, 2)
     '''
     # TODO: Code here
-    return None
+    dummies = pd.get_dummies(df['Embarked'], prefix='Embarked')
+
+    df['Embarked_Q'] = dummies['Embarked_Q']
+
+    return round(df['Embarked_Q'].mean(),2)
+
 
 
 def Q7(df):
