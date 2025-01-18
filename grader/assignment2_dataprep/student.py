@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
+# from sklearn.model_selection import train_test_split
 
 """
     ASSIGNMENT 2 (STUDENT VERSION):
@@ -15,8 +15,7 @@ def Q1(df):
             How many rows are there in the "titanic_to_student.csv"?
     """
     # TODO: Code here
-    
-    return None
+    return df.shape[0]
 
 
 def Q2(df):
@@ -28,8 +27,16 @@ def Q2(df):
             How many columns do we have left?
     '''
     # TODO: Code here
-    return None
-
+    tmp = df.isnull().sum()/df.shape[0]
+    df = df.drop(columns = tmp[tmp > 0.5].index)
+    for col in df.columns:
+        if(df[col].dtype == 'object'):
+            proportions = df[col].value_counts(normalize=True, dropna=False)
+            # print(proportions)
+            if any(proportions > 0.7):
+                # print(col)
+                df.drop(columns=[col],inplace=True)
+    return df.shape[1]
 
 def Q3(df):
     '''
