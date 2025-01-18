@@ -45,7 +45,7 @@ def Q3(df):
             How many rows do we have left?
     '''
     # TODO: Code here
-    return None
+    return df[~df['Survived'].isnull()].shape[0]
 
 
 def Q4(df):
@@ -59,7 +59,24 @@ def Q4(df):
             Hint: Use function round(_, 2)
     '''
     # TODO: Code here
-    return None
+
+    col = 'Fare'
+
+    # print(df[col].mean())
+
+    q1 = df[col].quantile(0.25)
+    q3 = df[col].quantile(0.75)
+    iqr = q3 - q1   
+
+    idx = df[df[col] > q3 + 1.5*iqr].index
+
+    df.loc[idx,col] = q3 + 1.5*iqr
+
+    idx = df[df[col] < q1 - 1.5*iqr].index
+
+    df.loc[idx,col] = q1 - 1.5*iqr
+
+    return df[col].mean()   
 
 
 def Q5(df):
