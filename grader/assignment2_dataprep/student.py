@@ -1,5 +1,5 @@
 import pandas as pd
-# from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split
 
 """
     ASSIGNMENT 2 (STUDENT VERSION):
@@ -31,7 +31,7 @@ def Q2(df):
     df = df.drop(columns = tmp[tmp > 0.5].index)
     for col in df.columns:
         if(df[col].dtype == 'object'):
-            proportions = df[col].value_counts(normalize=True, dropna=False)
+            proportions = df[col].value_counts(normalize=True, dropna=True)
             # print(proportions)
             if any(proportions > 0.7):
                 # print(col)
@@ -76,7 +76,7 @@ def Q4(df):
 
     df.loc[idx,col] = q1 - 1.5*iqr
 
-    return df[col].mean()   
+    return round(df[col].mean(),2)
 
 
 def Q5(df):
@@ -122,5 +122,11 @@ def Q7(df):
             Hint: Use function round(_, 2), and train_test_split() from sklearn.model_selection, 
             Don't forget to impute missing values with mean.
     '''
-    # TODO: Code here
-    return None
+    # print(df['Survived'])
+    # df.drop(index=df[df['Survived'].isnull()].index,inplace=True)
+    # df = df.dropna(subset=['Survived'])
+    train, test = train_test_split(df, test_size=0.3, random_state=123,stratify=df['Survived'])
+
+    # train['Survived'].sum()/train.shape[0]
+    return round(train['Survived'].value_counts()[1]/train.shape[0],2)
+ 
