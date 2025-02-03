@@ -22,7 +22,9 @@ class BankLogistic:
 
         """
         # TODO: Paste your code here
-        pass 
+
+        BankLogistic('bank-st.csv')
+        return self.df.shape[0]
 
     def Q2(self): # DO NOT modify this line
         """
@@ -30,7 +32,10 @@ class BankLogistic:
             return the tuple of numeric variables and categorical variables are presented in the dataset.
         """
         # TODO: Paste your code here
-        pass  
+        # pass  
+        numeric_cols = self.df.select_dtypes(include=['number']).columns
+        categorical_cols = self.df.select_dtypes(exclude=['number']).columns
+        return (len(numeric_cols), len(categorical_cols))
     
     def Q3(self): # DO NOT modify this line
         """
@@ -38,7 +43,11 @@ class BankLogistic:
             return the tuple of the Class 0 (no) followed by Class 1 (yes) in 3 digits.
         """
         # TODO: Paste your code here
-        pass 
+        cnt_no = self.df['y'].value_counts()[0] 
+        cnt_yes = self.df['y'].value_counts()[1]    
+        total = cnt_no + cnt_yes
+
+        return (round(cnt_no/total,3).item(), round(cnt_yes/total,3).item())
       
     
 
@@ -49,7 +58,10 @@ class BankLogistic:
         """
         # TODO: Paste your code here
         
-        pass  
+        # pass  
+        self.df.drop_duplicates(inplace=True)
+        return self.df.shape
+
         
 
     def Q5(self): # DO NOT modify this line
