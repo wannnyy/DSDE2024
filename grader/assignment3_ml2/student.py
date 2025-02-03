@@ -1,5 +1,8 @@
 
 import pandas as pd #e.g. pandas, sklearn, .....
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.impute import SimpleImputer
 import warnings # DO NOT modify this line
 from sklearn.exceptions import ConvergenceWarning # DO NOT modify this line
 warnings.filterwarnings("ignore", category=ConvergenceWarning) # DO NOT modify this line
@@ -78,9 +81,26 @@ class BankLogistic:
 
         """
         # TODO: Paste your code here
-       
-        pass  
 
+        self.Q4()
+
+        self.df.replace('unknown', None, inplace=True)
+        # norm = self.df.count() / self.df.shape[0]
+
+        dp = []
+        for col in self.df.columns:     
+            norm = self.df[col].value_counts(normalize=True).max()
+            if norm > 0.99:
+                dp.append(col)
+
+        self.df.drop(columns=dp, inplace=True)
+
+        # return self.df.shape
+        X = self.df.drop(columns='y')
+        y = self.df['y']
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size=0.3, random_state=0, stratify=y)
+        return tuple(self.X_train.shape), tuple(self.X_test.shape)
+        
        
     def Q6(self): 
         """
@@ -105,7 +125,35 @@ class BankLogistic:
         """
         # TODO: Paste your code here
         
-        pass  
+        self.Q5()
+        # pass  
+        for col in self.X_train.columns:
+            if self.df[col].dtype == 'object':
+                self.X_train[col].fillna(self.X_train[col].mode()[0], inplace=True)
+                self.X_test[col].fillna(self.X_test[col].mode()[0], inplace=True)
+                # self.y_train[col].fillna(self.y_train[col].mode()[0], inplace=True)
+            else:
+                self.X_train[col].fillna(self.X_train[col].mean(), inplace=True)
+                self.X_test[col].fillna(self.X_test[col].mean(), inplace=True)
+                # self.y_train[col].fillna(self.y_train[col].mean(), inplace=True)
+
+        education_order = {
+            'illiterate': 1,
+            'basic.4y': 2,
+            'basic.6y': 3,
+            'basic.9y': 4,
+            'high.school': 5,
+            'professional.course': 6,
+            'university.degree': 7
+        }
+
+        self.X_train['education'] = self.X_train['education'].map(education_order)
+        self.X_test['education'] = self.X_test['education'].map(education_order)
+
+        self.X_train = pd.get_dummies(self.X_train)
+        self.X_test = pd.get_dummies(self.X_test)
+
+        return self.X_train.shape
     
     def Q7(self):
         ''' Problem7: Use Logistic Regression as the model with 
