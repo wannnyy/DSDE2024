@@ -1,7 +1,10 @@
 
 import pandas as pd #e.g. pandas, sklearn, .....
+from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.model_selection import cross_val_score
+from sklearn.linear_model import LogisticRegression
 from sklearn.impute import SimpleImputer
 import warnings # DO NOT modify this line
 from sklearn.exceptions import ConvergenceWarning # DO NOT modify this line
@@ -26,7 +29,7 @@ class BankLogistic:
         """
         # TODO: Paste your code here
 
-        BankLogistic('bank-st.csv')
+        # BankLogistic('bank-st.csv')
         return self.df.shape[0]
 
     def Q2(self): # DO NOT modify this line
@@ -46,11 +49,11 @@ class BankLogistic:
             return the tuple of the Class 0 (no) followed by Class 1 (yes) in 3 digits.
         """
         # TODO: Paste your code here
-        cnt_no = self.df['y'].value_counts()[0] 
-        cnt_yes = self.df['y'].value_counts()[1]    
-        total = cnt_no + cnt_yes
+        cnt_no = self.df['y'].value_counts()['no'] 
+        cnt_yes = self.df['y'].value_counts()['yes']    
+        total = self.df.shape[0]
 
-        return (round(cnt_no/total,3).item(), round(cnt_yes/total,3).item())
+        return (round(cnt_no/total,3), round(cnt_yes/total,3))
       
     
 
@@ -85,6 +88,7 @@ class BankLogistic:
         self.Q4()
 
         self.df.replace('unknown', None, inplace=True)
+        # self.df.replace('nonexistent', None, inplace=True)
         # norm = self.df.count() / self.df.shape[0]
 
         dp = []
@@ -127,15 +131,20 @@ class BankLogistic:
         
         self.Q5()
         # pass  
-        for col in self.X_train.columns:
-            if self.df[col].dtype == 'object':
-                self.X_train[col].fillna(self.X_train[col].mode()[0], inplace=True)
-                self.X_test[col].fillna(self.X_test[col].mode()[0], inplace=True)
-                # self.y_train[col].fillna(self.y_train[col].mode()[0], inplace=True)
-            else:
-                self.X_train[col].fillna(self.X_train[col].mean(), inplace=True)
-                self.X_test[col].fillna(self.X_test[col].mean(), inplace=True)
-                # self.y_train[col].fillna(self.y_train[col].mean(), inplace=True)
+        # for col in self.X_train.columns:
+        #     if self.df[col].dtype == 'object':
+        #         self.X_train[col].fillna(self.X_train[col].mode()[0], inplace=True)
+        #         self.X_test[col].fillna(self.X_train[col].mode()[0], inplace=True)
+        #         # self.y_train[col].fillna(self.y_train[col].mode()[0], inplace=True)
+        #     else:
+        #         self.X_train[col].fillna(self.X_train[col].mean(), inplace=True)
+        #         self.X_test[col].fillna(self.X_train[col].mean(), inplace=True)
+        #         # self.y_train[col].fillna(self.y_train[col].mean(), inplace=True)
+        self.X_train.fillna(self.X_train.mean(numeric_only=True), inplace=True)
+        self.X_train.fillna(self.X_train.mode().iloc[0], inplace=True)
+
+        self.X_test.fillna(self.X_train.mean(numeric_only=True), inplace=True)
+        self.X_test.fillna(self.X_train.mode().iloc[0], inplace=True)
 
         education_order = {
             'illiterate': 1,
@@ -164,8 +173,21 @@ class BankLogistic:
             What is the macro F1 score of the model on the test data? in 2 digits
         '''
         # TODO: Paste your code here
+
+        self.Q6()
         
-        pass  
+        model = LogisticRegression(random_state=2025, class_weight='balanced', max_iter=500)
+
+        model.fit(self.X_train, self.y_train)
+
+        # model.predict(self.X_test)
+
+        # rp = cross_val_score(model, self.X_test, self.y_test, cv=5, scoring='f1_macro')
+        y_pred = model.predict(self.X_test)
+        return round(f1_score(self.y_test, y_pred, average='macro'), 2)
+
+        
+        
         
 
 
