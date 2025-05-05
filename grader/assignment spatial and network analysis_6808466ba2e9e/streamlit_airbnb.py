@@ -41,9 +41,24 @@ st.sidebar.header('DBSCAN Parameters')
 
 st.sidebar.write("eps (degree)")
 st.sidebar.write("Create a slider for eps here")
+eps = st.sidebar.slider(
+    'eps in degree',
+    min_value=0.001,
+    max_value=0.005,
+    value=0.002,
+    step=0.001,
+    format="%.3f"
+)
                                
 st.sidebar.write("min_samples")
-st.sidebar.write("Create a slider for min_sample here")                                
+st.sidebar.write("Create a slider for min_sample here") 
+mn = st.sidebar.slider(
+    'Select minimum samples',
+    min_value = 2,
+    value=3,
+    max_value = 10,
+)       
+                        
 
 
 num_top_clusters = st.sidebar.slider('Number of Top Clusters to Show', 1, 10, 5)
@@ -101,8 +116,8 @@ st.header('Accommodation Hotspot Analysis')
 try:
     # Perform DBSCAN clustering
     coords = filtered_data[['latitude', 'longitude']] 
-    eps_degrees = 0.002
-    min_samples = 3
+    eps_degrees = eps # 0.002
+    min_samples = mn     # 3
     db = DBSCAN(eps=eps_degrees, min_samples=min_samples).fit(coords)
     
     # Add cluster labels to dataframe
@@ -126,13 +141,50 @@ try:
     st.write("Draw a scatter map for clusters here")
     
     # Create cluster layer
+    # coords = filtered_data[['latitude','longitude']]
+    # db = DBSCAN(eps=eps,min_samples=mn).fit(coords)
+    # filtered_data[''] = db.labels_    
+    scatter_layer = pdk.Layer(
+        "ScatterplotLayer",
+        viz_data,
+        get_position="[longitude, latitude]",
+        get_color='color',
+        get_radius=100,
+        opacity = 0.5,
+        pickable = True,
+        
+    )
+    
+    view_state = pdk.ViewState(
+        latitude=viz_data['latitude'].mean(),
+        longitude=viz_data['longitude'].mean(),
+        zoom =  10,
+    )
 
     
     # Create and display the map
+    scatter_map = pdk.Deck(
+        layers=[scatter_layer],
+        initial_view_state=view_state,
+        tooltip={"text": "{cluster}"}
+    )
+    st.pydeck_chart(scatter_map)
+
 
     st.write("Draw a heatmap for clusters here")
     
     # Create heatmap layer    
+    heatmap_layer = pdk.Layer(
+        "HeatmapLayer",
+        viz_data,
+        get_position="[longitude, latitude]",
+        opacity = 0.5,
+        pickable = True,
+    )
+    heat_map = pdk.Deck(
+        layers=[heatmap_layer], initial_view_state=view_state
+    )
+    st.pydeck_chart(heat_map)
 
     
     # Create and display the map
@@ -140,7 +192,19 @@ try:
     st.write("Draw a hexagon map for clusters here")
     
     # Create hexagon layer    
+    hex_layer = pdk.Layer(
+        "HexagonLayer",
+        viz_data,
+        get_position="[longitude, latitude]",
+        opacity=0.5,
+        pickable=True
+    )
 
+    hex_map = pdk.Deck(
+        layers=[hex_layer], initial_view_state=view_state
+    )
+    
+    st.pydeck_chart(hex_map)
 
     # Create and display the map
 
